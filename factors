@@ -1,32 +1,12 @@
-#!/usr/bin/python3
-import sys
+#!/bin/bash
 
+while read -r line; do
+    number=$(echo "$line" | cut -d':' -f1)
+    factors=$(factor "$number" | awk -F ': ' '{ print $2 }')
 
-def factorize(number):
-    for i in range(2, number):
-        if number % i == 0:
-            return (number // i, i)
-    return (number, 1)
+    # Split factors into two numbers
+    factor1=$(echo "$factors" | awk '{print $1}')
+    factor2=$(echo "$factors" | awk '{print $2}')
 
-
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: factors <file>")
-        sys.exit(1)
-    input_file = sys.argv[1]
-    try:
-        with open(input_file, 'r') as file:
-            for line in file:
-                num = int(line.strip())
-                factors = factorize(num)
-
-                if factors:
-                    print(f"{num}={factors[0]}*{factors[1]}")
-    except (FileNotFoundError, ValueError):
-        print(f"Error: File '{input_file}' not found.")
-        print("OR use natural numbers")
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
+    echo "$number=$(($number / $factor1))*$factor1"
+done < "$1"
